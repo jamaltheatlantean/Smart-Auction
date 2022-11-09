@@ -1,0 +1,16 @@
+node_modules
+artifacts
+deploy
+scripts
+test
+constants
+.env
+coverage
+coverage.json
+typechain
+typechain-types
+
+#Hardhat files
+cache
+artifacts
+
