@@ -1,252 +1,212 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.13;
 
-//import "@chainlink/contracts/src/v0.8/KeeperCompatible.sol";
+pragma solidity^0.8.13;
 
 interface IERC721 {
     function safeTransferFrom(
-        address from,
-        address to,
-        uint tokenId
+        address sender,
+        address nft,
+        uint nftId
     ) external;
-
+        
     function transferFrom(
         address,
         address,
-        uint
+        uint 
     ) external;
 }
 
-error Auction__NotEnded();
-error Auction__NotEnoughEth();
-error Auction__UpkeepNotNeeded();
-error Auction__AlreadyTerminated();
-error Auction__NotSeller();
+error Auction__AppNotStarted();
 error Auction__NotStarted();
-error Auction__Sold();
+error Auction__ItemSold();
+error Auction__NotOwner();
+error Auction__NoBalance();
+error Auction__NotSeller();
+error Auction__ItemNonExistent();
 
-    
+contract AuctionAuction {
 
-contract FlashAuction {
-    enum AuctionState {
-        OPEN,
-        CLOSED
-    }
-
-    AuctionState state;
+    address public owner;
+    uint public auctionItems = 0;
+    // a small fee for using the application
+    uint public constant TAX_FEE = 1e5;
 
     struct Auction {
-        uint8 auctionId;
+        address payable seller;
+        address highestBidder;
+        uint highestBid;
         address nft;
-        uint _nftId;
+        uint nftId;
         bool started;
         bool sold;
     }
+    Auction[] public auctions;
 
-    Auction [] public auctions;
-    //mapping(uint8 => bool) public auctionExists;
-    mapping(uint8 => address) public sellerOf;
-    mapping(uint8 => bool) public hasStarted;
-    mapping(uint8 => bool) public hasEnded;
-    
+    mapping(uint => address) public sellerOf;
     mapping(address => bool) public isSeller;
-    mapping(address => bool) public isSelller;
-
-
-    address payable public s_seller;
-    mapping(address => uint) public s_highestBidder;
-    mapping(address => uint) public s_highestBid;
-    address payable public owner;
-
-    uint public endAt;
-    bool public started;
-    bool public ended;
-
-    uint8 public auctionItems = 0;
-    uint public endTime = block.timestamp + 3 minutes; // all auction ends same time
-
-    uint public constant STARTING_BID = 2e2;
-    uint public constant TAX_FEE = 2e5;
-
     mapping(address => uint) public bids;
 
-    modifier onlyOwner() {
-        require(owner == msg.sender, "Not owner");
+    // will replace with enums
+    bool public appStarted;
+    bool public appClosed;
+
+    // events
+    event AuctionOpen(address indexed owner);
+    event ItemCreated(address indexed seller, uint timestamp, uint auctionId);
+    event ItemBidIncreased(address indexed sender, uint bid);
+    event BalanceClaimed(address indexed sender, uint bal);
+    event ItemSold(address winner, uint amount);
+    event AuctionClosed(address indexed owner);
+
+        // modifiers
+    modifier onlyOwner {
+        if(msg.sender != owner)
+            revert Auction__NotOwner();
         _;
     }
-    
-    modifier onlySeller(uint8 auctionId) {
-        require(isSeller[msg.sender], "Not s_seller");
+
+    modifier auctionExists(uint _auctionId) {
+    if(_auctionId > auctions.length)
+        revert Auction__ItemNonExistent();
         _;
     }
-
-    modifier auctionExists(uint8 auctionId) {
-        require(auctionId < auctions.length, "No item in auction");
-        _;
-    }
-
-
-    event AuctionStarted(uint indexed auctionId);
-    event AuctionCreated(address indexed s_seller, uint256 timestamp, uint8 auctionId);
-    event BalanceClaimed(address indexed bidder,uint amount);
-    event BidIncreased(address indexed sender, uint bid);
-    event AuctionEnded(uint indexed auctionId);
-
-    constructor(
-    ) {
+    constructor() {
         owner = payable(msg.sender);
     }
-
-    /**
-    * @dev function transfers ownership if need for repossesion of contract
-    */
-    function transferOwnership(address payable newOwner) external onlyOwner {
-        require(!started, "Auction already started");
-        require(newOwner != address(0));
-        owner = newOwner;
-    }
-
-
-    function registerNft(address nft, uint8 _nftId
-    ) public payable {
-        require(msg.value >= TAX_FEE, "Inadequate fee");
-        auctions.push(Auction(
-            auctionItems+1,
-            nft,
-            _nftId,
-            false,
-            false
-        ));
-
-        //IERC721(nft).transferFrom(s_seller, address(this), _nftId);
-        sellerOf[auctionItems] = msg.sender;
-        auctionItems + 1;
-        isSeller[msg.sender] = true;
-        s_seller = payable(msg.sender);
-
-        emit AuctionCreated(msg.sender, block.timestamp, auctionItems++);
-    }
-
-    function startApp() public onlyOwner {
-        require(!started, "Application already started");
-        started = true;
-    }
-
-    function startAuction(uint8 auctionId) public onlySeller(auctionId) auctionExists(auctionId) {
-        require(started, "Application not started");
-        Auction storage auction = auctions[auctionId];
-        auction.started = true;
-        require(hasStarted[auctionId] != true, "Auction already started");
-        if(hasEnded[auctionId]) {
-            revert Auction__Sold();
-        }
-        endTime = block.timestamp - 60 seconds;
-
-        emit AuctionStarted(auctionId);
-    }
-
-
-    function bid(uint8 auctionId) public payable auctionExists(auctionId) returns (bool) {
-        require(!ended, "Application already ended");
-        Auction storage auction = auctions[auctionId];
-        if(auction.started != true) {
-            revert Auction__NotStarted();
-        }
-        if(auction.sold = true) {
-            revert Auction__Sold();
-        }
-        require(msg.value >= STARTING_BID, "Not up to starting bid");
-        require(started, "Application not started");
-        if(msg.value <= s_highestBid) {
-            revert Auction__NotEnoughEth();
+        // generally starts up the auction application.
+        function startApp() public {
+            appStarted = true;
+            emit AuctionOpen(msg.sender);
         }
 
-        if (s_highestBidder != address(0)) {
-            bids[s_highestBidder] += s_highestBid;
+
+        function register(address _nft, uint _nftId, uint highestBid, address payable seller) public payable {
+            require(msg.value >= TAX_FEE, "warning: insufficient registration funds");
+            auctions.push(Auction({
+                seller: payable(seller),
+                nft: _nft,
+                nftId: _nftId,
+                highestBidder: address(0),
+                highestBid: highestBid,
+                started: false,
+                sold: false
+            }));
+
+            sellerOf[auctionItems] = msg.sender;
+            auctionItems += 1;
+            isSeller[msg.sender] = true;
+            IERC721(_nft).transferFrom(seller, address(this), _nftId);
+            // emit event
+            emit ItemCreated(msg.sender, block.timestamp, auctionItems+1);
         }
 
-        //endAt = endTime;
-
-        s_highestBidder = msg.sender;
-        s_highestBid = msg.value;
-
-        emit BidIncreased(msg.sender, msg.value);
-
-        return true;
-    }
-
-    function claimBal(uint8 auctionId) external auctionExists(auctionId) {
-        require(!ended);
-        uint bal = bids[msg.sender];
-        bids[msg.sender] = 0;
-        payable(msg.sender).transfer(bal);
-
-        emit BalanceClaimed(msg.sender, bal);
-    }
-
-    function transferToBidder(address nft, uint8 _nftId, uint8 auctionId) external onlySeller(auctionId) {
-        require(hasStarted[auctionId] = true, "Auction not started yet");
-        Auction storage auction = auctions[auctionId];
-        if(auction.started != true) {
-            revert Auction__NotStarted();
+        /**
+        * Time Stamp in seconds
+        * 86400 = 1 day
+        */
+        function startAuction(uint _auctionId) public auctionExists(_auctionId) {
+            if(!appStarted)
+                revert Auction__AppNotStarted();
+            Auction storage auction = auctions[_auctionId];
+            if(msg.sender != auction.seller)
+                revert Auction__NotSeller();
+            require(auction.sold != true, "Item sold");
+            auction.started = true;
+            // add endTime later
         }
-        require(block.timestamp >= endAt, "Not time to end");
-        require(!ended, "Already ended");
 
-        //ended = true;
-        auction.sold = true;
-        //s_seller = payable(msg.sender);
-        // transfer NFT to highest Bidder
-         if(s_highestBidder[auctionId] != address(0)) {
-             //IERC721(nft).safeTransferFrom(address(this), s_highestBidder, _nftId);
-             s_seller.transfer(s_highestBid);
-         } else {
-            //IERC721(nft).safeTransferFrom(address(this), s_seller, _nftId);
-         }
+        function bid(uint _auctionId) public auctionExists(_auctionId) payable returns (bool)  {
+            if(!appStarted)
+                revert Auction__AppNotStarted();
+            Auction storage auction = auctions[_auctionId];
+            if(!auction.started)
+                revert Auction__NotStarted();
+            if(auction.sold)
+                revert Auction__ItemSold();
+            require(msg.value > auction.highestBid, "Bid higher");
+            auction.highestBidder = msg.sender;
+            auction.highestBid = msg.value;
+            if(auction.highestBidder != address(0)) {
+                bids[auction.highestBidder] += auction.highestBid;
+            }
+            // emit event
+            emit ItemBidIncreased(msg.sender, msg.value);
+            return true;
+        }
 
-        emit AuctionEnded(_nftId);
-    }
+        function claimBalance(uint _auctionId) external auctionExists(_auctionId) {
+            //require(!appClosed, "Application closed");
+            Auction storage auction = auctions[_auctionId];
+            uint bal = bids[msg.sender];
+            bids[msg.sender] = 0;
+            if(msg.sender != auction.highestBidder) {
+                payable(msg.sender).transfer(bal);
+            } else {
+                revert Auction__NoBalance();
+            }
+            // emit event
+            emit BalanceClaimed(msg.sender, bal);
+        }
+        
+        function transferItem(address nft, uint nftId, uint _auctionId) external {
+            Auction storage auction = auctions[_auctionId];
+            if(msg.sender != auction.seller)
+                revert Auction__NotSeller();
+            if(auction.highestBidder != address(0)) {
+                //IERC721(nft).safeTransferFrom(address(this), auction.highestBidder, nftId);
+                auction.seller.transfer(auction.highestBid);
+            } else {
+                // transfer item back to seller
+                //IERC721(nft).safeTransferFrom(address(this), auction.seller, nftId);
+            }
+            auction.sold = true;
+            // emit event
+            emit ItemSold(auction.highestBidder, auction.highestBid);
+        }
 
-    // Warning: Function terminates bytecode of contract and is irreversible
-    function endApp() external onlyOwner {
-        ended = true;
-        selfdestruct(owner);
-    }
+        /**
+        * @dev function transfers ownership if need for repossesion of contract.
+        */
+        function transferOwnership(address payable newOwner) external {
+            require(!appStarted, "warning: close application first");
+            require(newOwner != address(0), "invalid address");
+            owner = payable(newOwner);
+        }
 
-    function getCurrentBid() public view returns (uint) {
-        return s_highestBid;
-    }
+        function closeApplication() external onlyOwner {
+            appClosed = true;
+            selfdestruct(payable (owner));
+            emit AuctionClosed(msg.sender);
+        }
 
-    // for recovering testnet eth, comment out during production
-    function getBackFunds(address payable addr) public {
-        addr.transfer(address(this).balance);
-    }
+        // getter functions
+        function getHighestBid(uint _auctionId) public 
+        view
+        returns (uint highestBid) {
+            Auction storage auction = auctions[_auctionId];
+            return(auction.highestBid);
+        }
+
+        function getHighestBidder(uint _auctionId) public view returns (address highestBidder)
+        {
+            Auction storage auction = auctions[_auctionId];
+            return(auction.highestBidder);
+        }
+
+        function getAuctionState(uint _auctionId) public view returns (bool started, bool sold) {
+            Auction storage auction = auctions[_auctionId];
+            return(auction.started, auction.sold);
+        }
+
+        function getItems() public view returns (Auction[] memory) {
+            return auctions;
+        }
+
+        function itemInfo(uint _auctionId) public view returns (Auction memory) {
+            return auctions[_auctionId - 1];
+        }
 
 
-         
-}
+} 
 
-// ERRORS!!!
-// does not keep track of bidders (fixed)
-// fails to get the current s_highestBid after update (fixed)
-// does not update s_highestBidder in struct (fixed)
-// claim bids is stuck in a forever open loop (can't be fixed but irrelevant)
-
-// CHECKS!!!
-// retrieves minBid 
-// getter functions are effective xcept listed above
-
-// UNFINISHED!!!
-// coninues to bid after terminate... write terminate function
-
-// NEW ERRORS
-// No new errors but unhandled orange ticks
-// fix biddding to match the auction Id. Right now highest bid continues 
-// from last auction
-// fix that only seller of auctionId can call a the transfer function
-
-// ADDS
-
-// address x = 0x212;
-// address myAddress = this;
-// if (x.balance < 10 && myAddress.balance >= 10) x.transfer(10);
+// fix formation. check for more security ifs and requires. Use enum for auctionState
