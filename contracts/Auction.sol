@@ -70,142 +70,142 @@ contract AuctionAuction {
         revert Auction__ItemNonExistent();
         _;
     }
+
     constructor() {
         owner = payable(msg.sender);
     }
-        // generally starts up the auction application.
-        function startApp() public {
-            appStarted = true;
-            emit AuctionOpen(msg.sender);
-        }
+
+    // generally starts up the auction application.
+    function startApp() public {
+        appStarted = true;
+        emit AuctionOpen(msg.sender);
+    }
 
 
-        function register(address _nft, uint _nftId, uint highestBid, address payable seller) public payable {
-            require(msg.value >= TAX_FEE, "warning: insufficient registration funds");
-            auctions.push(Auction({
-                seller: payable(seller),
-                nft: _nft,
-                nftId: _nftId,
-                highestBidder: address(0),
-                highestBid: highestBid,
-                started: false,
-                sold: false
-            }));
+    function register(address _nft, uint _nftId, uint highestBid, address payable seller) public payable {
+        require(msg.value >= TAX_FEE, "warning: insufficient registration funds");
+        auctions.push(Auction({
+            seller: payable(seller),
+            nft: _nft,
+            nftId: _nftId,
+            highestBidder: address(0),
+            highestBid: highestBid,
+            started: false,
+            sold: false
+        }));
 
-            sellerOf[auctionItems] = msg.sender;
-            auctionItems += 1;
-            isSeller[msg.sender] = true;
-            IERC721(_nft).transferFrom(seller, address(this), _nftId);
-            // emit event
-            emit ItemCreated(msg.sender, block.timestamp, auctionItems+1);
-        }
-
-        /**
-        * Time Stamp in seconds
-        * 86400 = 1 day
+    sellerOf[auctionItems] = msg.sender;
+    auctionItems += 1;
+    isSeller[msg.sender] = true;
+    IERC721(_nft).transferFrom(seller, address(this), _nftId);
+    // emit event
+        emit ItemCreated(msg.sender, block.timestamp, auctionItems+1);
+    }
+    /**
+    * Time Stamp in seconds
+    * 86400 = 1 day
         */
-        function startAuction(uint _auctionId) public auctionExists(_auctionId) {
-            if(!appStarted)
-                revert Auction__AppNotStarted();
-            Auction storage auction = auctions[_auctionId];
-            if(msg.sender != auction.seller)
-                revert Auction__NotSeller();
-            require(auction.sold != true, "Item sold");
-            auction.started = true;
-            // add endTime later
-        }
+    function startAuction(uint _auctionId) public auctionExists(_auctionId) {
+        if(!appStarted)
+            revert Auction__AppNotStarted();
+        Auction storage auction = auctions[_auctionId];
+        if(msg.sender != auction.seller)
+            revert Auction__NotSeller();
+        require(auction.sold != true, "Item sold");
+        auction.started = true;
+        // add endTime later
+    }
 
-        function bid(uint _auctionId) public auctionExists(_auctionId) payable returns (bool)  {
-            if(!appStarted)
-                revert Auction__AppNotStarted();
-            Auction storage auction = auctions[_auctionId];
-            if(!auction.started)
-                revert Auction__NotStarted();
-            if(auction.sold)
-                revert Auction__ItemSold();
-            require(msg.value > auction.highestBid, "Bid higher");
-            auction.highestBidder = msg.sender;
-            auction.highestBid = msg.value;
-            if(auction.highestBidder != address(0)) {
-                bids[auction.highestBidder] += auction.highestBid;
-            }
-            // emit event
-            emit ItemBidIncreased(msg.sender, msg.value);
-            return true;
+    function bid(uint _auctionId) public auctionExists(_auctionId) payable returns (bool)  {
+        if(!appStarted)
+            revert Auction__AppNotStarted();
+        Auction storage auction = auctions[_auctionId];
+        if(!auction.started)
+            revert Auction__NotStarted();
+        if(auction.sold)
+            revert Auction__ItemSold();
+        require(msg.value > auction.highestBid, "Bid higher");
+        auction.highestBidder = msg.sender;
+        auction.highestBid = msg.value;
+        if(auction.highestBidder != address(0)) {
+            bids[auction.highestBidder] += auction.highestBid;
         }
+        // emit event
+        emit ItemBidIncreased(msg.sender, msg.value);
+        return true;
+    }
 
-        function claimBalance(uint _auctionId) external auctionExists(_auctionId) {
-            //require(!appClosed, "Application closed");
-            Auction storage auction = auctions[_auctionId];
-            uint bal = bids[msg.sender];
-            bids[msg.sender] = 0;
-            if(msg.sender != auction.highestBidder) {
-                payable(msg.sender).transfer(bal);
-            } else {
-                revert Auction__NoBalance();
-            }
-            // emit event
-            emit BalanceClaimed(msg.sender, bal);
+    function claimBalance(uint _auctionId) external auctionExists(_auctionId) {
+        //require(!appClosed, "Application closed");
+        Auction storage auction = auctions[_auctionId];
+        uint bal = bids[msg.sender];
+        bids[msg.sender] = 0;
+        if(msg.sender != auction.highestBidder) {
+            payable(msg.sender).transfer(bal);
+        } else {
+        revert Auction__NoBalance();
         }
+        // emit event
+        emit BalanceClaimed(msg.sender, bal);
+    }
         
-        function transferItem(address nft, uint nftId, uint _auctionId) external {
-            Auction storage auction = auctions[_auctionId];
-            if(msg.sender != auction.seller)
-                revert Auction__NotSeller();
-            if(auction.highestBidder != address(0)) {
-                //IERC721(nft).safeTransferFrom(address(this), auction.highestBidder, nftId);
-                auction.seller.transfer(auction.highestBid);
-            } else {
-                // transfer item back to seller
-                //IERC721(nft).safeTransferFrom(address(this), auction.seller, nftId);
-            }
-            auction.sold = true;
-            // emit event
-            emit ItemSold(auction.highestBidder, auction.highestBid);
+    function transferItem(address nft, uint nftId, uint _auctionId) external {
+        Auction storage auction = auctions[_auctionId];
+        if(msg.sender != auction.seller)
+            revert Auction__NotSeller();
+        if(auction.highestBidder != address(0)) {
+            //IERC721(nft).safeTransferFrom(address(this), auction.highestBidder, nftId);
+        auction.seller.transfer(auction.highestBid);
+        } else {
+            // transfer item back to seller
+            //IERC721(nft).safeTransferFrom(address(this), auction.seller, nftId);
         }
+        auction.sold = true;
+        // emit event
+        emit ItemSold(auction.highestBidder, auction.highestBid);
+    }
 
-        /**
-        * @dev function transfers ownership if need for repossesion of contract.
-        */
-        function transferOwnership(address payable newOwner) external {
-            require(!appStarted, "warning: close application first");
-            require(newOwner != address(0), "invalid address");
-            owner = payable(newOwner);
-        }
+    /**
+    * @dev function transfers ownership if need for repossesion of contract.
+    */
+    function transferOwnership(address payable newOwner) external {
+        require(!appStarted, "warning: close application first");
+        require(newOwner != address(0), "invalid address");
+        owner = payable(newOwner);
+    }
 
-        function closeApplication() external onlyOwner {
-            appClosed = true;
-            selfdestruct(payable (owner));
-            emit AuctionClosed(msg.sender);
-        }
+    function closeApplication() external onlyOwner {
+        appClosed = true;
+        selfdestruct(payable (owner));
+        emit AuctionClosed(msg.sender);
+    }
 
-        // getter functions
-        function getHighestBid(uint _auctionId) public 
-        view
-        returns (uint highestBid) {
-            Auction storage auction = auctions[_auctionId];
-            return(auction.highestBid);
-        }
+    // getter functions
+    function getHighestBid(uint _auctionId) public 
+    view
+    returns (uint highestBid) {
+        Auction storage auction = auctions[_auctionId];
+        return(auction.highestBid);
+    }
 
-        function getHighestBidder(uint _auctionId) public view returns (address highestBidder)
-        {
-            Auction storage auction = auctions[_auctionId];
-            return(auction.highestBidder);
-        }
+    function getHighestBidder(uint _auctionId) public view returns (address highestBidder)
+    {
+        Auction storage auction = auctions[_auctionId];
+        return(auction.highestBidder);
+    }
 
-        function getAuctionState(uint _auctionId) public view returns (bool started, bool sold) {
-            Auction storage auction = auctions[_auctionId];
-            return(auction.started, auction.sold);
-        }
+    function getAuctionState(uint _auctionId) public view returns (bool started, bool sold) {
+        Auction storage auction = auctions[_auctionId];
+        return(auction.started, auction.sold);
+    }
 
-        function getItems() public view returns (Auction[] memory) {
-            return auctions;
-        }
+    function getItems() public view returns (Auction[] memory) {
+        return auctions;
+    }
 
-        function itemInfo(uint _auctionId) public view returns (Auction memory) {
-            return auctions[_auctionId - 1];
-        }
-
+    function getItemInfo(uint _auctionId) public view returns (Auction memory) {
+        return auctions[_auctionId - 1];
+    }
 
 } 
 
