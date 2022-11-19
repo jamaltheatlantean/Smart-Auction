@@ -216,6 +216,7 @@ contract AuctionAuction {
     }
 
 }
+
 /**
 * @ Persoanal Notes: Using enums to represent the auctionState is pointless as there are only
 * started and sold booleans.
