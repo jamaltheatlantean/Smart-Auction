@@ -223,4 +223,3 @@ contract AuctionAuction {
 * Open github repo and write a deploy script.
 */
 
-
