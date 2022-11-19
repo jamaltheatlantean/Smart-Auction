@@ -28,7 +28,7 @@ contract AuctionAuction {
 
     address public owner;
     uint public auctionItems = 0;
-    // a small fee for using the application
+    // charge a small fee for using the application
     uint public constant TAX_FEE = 1e5;
 
     struct Auction {
@@ -83,6 +83,9 @@ contract AuctionAuction {
 
 
     function register(address _nft, uint _nftId, uint highestBid, address payable seller) public payable {
+        if(!appStarted)
+            revert Auction__AppNotStarted();
+        require(!appClosed, "warning: application closed");
         require(msg.value >= TAX_FEE, "warning: insufficient registration funds");
         auctions.push(Auction({
             seller: payable(seller),
@@ -93,14 +96,14 @@ contract AuctionAuction {
             started: false,
             sold: false
         }));
-
-    sellerOf[auctionItems] = msg.sender;
-    auctionItems += 1;
-    isSeller[msg.sender] = true;
-    IERC721(_nft).transferFrom(seller, address(this), _nftId);
-    // emit event
+        sellerOf[auctionItems] = msg.sender;
+        auctionItems += 1;
+        isSeller[msg.sender] = true;
+        IERC721(_nft).transferFrom(seller, address(this), _nftId);
+        // emit event
         emit ItemCreated(msg.sender, block.timestamp, auctionItems+1);
     }
+
     /**
     * Time Stamp in seconds
     * 86400 = 1 day
@@ -108,6 +111,7 @@ contract AuctionAuction {
     function startAuction(uint _auctionId) public auctionExists(_auctionId) {
         if(!appStarted)
             revert Auction__AppNotStarted();
+        require(!appClosed, "warning: application closed");
         Auction storage auction = auctions[_auctionId];
         if(msg.sender != auction.seller)
             revert Auction__NotSeller();
@@ -119,6 +123,7 @@ contract AuctionAuction {
     function bid(uint _auctionId) public auctionExists(_auctionId) payable returns (bool)  {
         if(!appStarted)
             revert Auction__AppNotStarted();
+        require(!appClosed, "warning: application closed");
         Auction storage auction = auctions[_auctionId];
         if(!auction.started)
             revert Auction__NotStarted();
@@ -136,7 +141,7 @@ contract AuctionAuction {
     }
 
     function claimBalance(uint _auctionId) external auctionExists(_auctionId) {
-        //require(!appClosed, "Application closed");
+        require(!appClosed, "warning: application closed");
         Auction storage auction = auctions[_auctionId];
         uint bal = bids[msg.sender];
         bids[msg.sender] = 0;
@@ -150,6 +155,9 @@ contract AuctionAuction {
     }
         
     function transferItem(address nft, uint nftId, uint _auctionId) external {
+        if(!appStarted)
+            revert Auction__AppNotStarted();
+        require(!appClosed, "warning: application closed");
         Auction storage auction = auctions[_auctionId];
         if(msg.sender != auction.seller)
             revert Auction__NotSeller();
@@ -207,6 +215,13 @@ contract AuctionAuction {
         return auctions[_auctionId - 1];
     }
 
-} 
+}
+/**
+* @ Persoanal Notes: Using enums to represent the auctionState is pointless as there are only
+* started and sold booleans.
+* Focus more on implementing chainlink keepers
+* Open github repo and write a deploy script.
+*/
 
-// fix formation. check for more security ifs and requires. Use enum for auctionState
+
+
