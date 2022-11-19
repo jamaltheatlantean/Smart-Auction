@@ -222,4 +222,3 @@ contract AuctionAuction {
 * Focus more on implementing chainlink keepers
 * Open github repo and write a deploy script.
 */
-
