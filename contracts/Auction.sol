@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
-pragma solidity^0.8.13;
+pragma solidity ^0.8.13;
 
-// interface
 interface IERC721 {
     function safeTransferFrom(
         address sender,
@@ -161,6 +160,7 @@ contract AuctionAuction {
         Auction storage auction = auctions[_auctionId];
         if(msg.sender != auction.seller)
             revert Auction__NotSeller();
+        auction.sold = true;
         if(auction.highestBidder != address(0)) {
             //IERC721(nft).safeTransferFrom(address(this), auction.highestBidder, nftId);
         auction.seller.transfer(auction.highestBid);
@@ -168,7 +168,6 @@ contract AuctionAuction {
             // transfer item back to seller
             //IERC721(nft).safeTransferFrom(address(this), auction.seller, nftId);
         }
-        auction.sold = true;
         // emit event
         emit ItemSold(auction.highestBidder, auction.highestBid);
     }
@@ -216,10 +215,11 @@ contract AuctionAuction {
     }
 
 }
-
 /**
 * @ Persoanal Notes: Using enums to represent the auctionState is pointless as there are only
 * started and sold booleans.
 * Focus more on implementing chainlink keepers
 * Open github repo and write a deploy script.
 */
+
+
