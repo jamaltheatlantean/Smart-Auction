@@ -32,7 +32,17 @@ contract AuctionAuction {
     // charge a small fee for using the application
     uint public constant TAX_FEE = 1e5;
 
-    struct Auction {
+
+
+    mapping(uint => address) public sellerOf;
+    mapping(address => bool) public isSeller;
+    mapping(address => uint) public bids;
+
+    // will replace with enums
+    bool public appStarted;
+    bool public appClosed;
+    
+        struct Auction {
         address payable seller;
         address highestBidder;
         uint highestBid;
@@ -42,14 +52,6 @@ contract AuctionAuction {
         bool sold;
     }
     Auction[] public auctions;
-
-    mapping(uint => address) public sellerOf;
-    mapping(address => bool) public isSeller;
-    mapping(address => uint) public bids;
-
-    // will replace with enums
-    bool public appStarted;
-    bool public appClosed;
 
     // events
     event AuctionOpen(address indexed owner);
