@@ -15,6 +15,7 @@ interface IERC721 {
     ) external;
 }
 
+// =======> ERRORS <==========
 error Auction__AppNotStarted();
 error Auction__NotStarted();
 error Auction__ItemSold();
@@ -25,6 +26,7 @@ error Auction__ItemNonExistent();
 
 contract AuctionAuction {
 
+// =======> STATE VARIABLES <========
     address public owner;
     uint public auctionItems = 0;
     // charge a small fee for using the application
