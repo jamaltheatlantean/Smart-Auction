@@ -29,8 +29,7 @@ contract AuctionAuction {
 // =======> STATE VARIABLES <========
     address public owner;
     uint public auctionItems = 0;
-    // charge a small fee for using the application
-    uint public constant TAX_FEE = 1e5;
+    uint public constant TAX_FEE = 1e5; // fee for registration
 
     mapping(uint => address) public sellerOf;
     mapping(address => bool) public isSeller;
@@ -72,6 +71,12 @@ contract AuctionAuction {
         _;
     }
 
+    modifier open {
+        if(appStarted != true) 
+            revert Auction__AppNotStarted();
+        _;
+    }
+
     constructor() {
         owner = payable(msg.sender);
     }
@@ -83,9 +88,7 @@ contract AuctionAuction {
     }
 
 
-    function register(address _nft, uint _nftId, uint highestBid, address payable seller) public payable {
-        if(!appStarted)
-            revert Auction__AppNotStarted();
+    function register(address _nft, uint _nftId, uint highestBid, address payable seller) public payable open {
         require(!appClosed, "warning: application closed");
         require(msg.value >= TAX_FEE, "warning: insufficient registration funds");
         auctions.push(Auction({
@@ -109,9 +112,7 @@ contract AuctionAuction {
     * Time Stamp in seconds
     * 86400 = 1 day
         */
-    function startAuction(uint _auctionId) public auctionExists(_auctionId) {
-        if(!appStarted)
-            revert Auction__AppNotStarted();
+    function startAuction(uint _auctionId) public auctionExists(_auctionId) open {
         require(!appClosed, "warning: application closed");
         Auction storage auction = auctions[_auctionId];
         if(msg.sender != auction.seller)
@@ -121,9 +122,7 @@ contract AuctionAuction {
         // add endTime later
     }
 
-    function bid(uint _auctionId) public auctionExists(_auctionId) payable returns (bool)  {
-        if(!appStarted)
-            revert Auction__AppNotStarted();
+    function bid(uint _auctionId) public auctionExists(_auctionId) payable open returns (bool)  {
         require(!appClosed, "warning: application closed");
         Auction storage auction = auctions[_auctionId];
         if(!auction.started)
@@ -155,9 +154,7 @@ contract AuctionAuction {
         emit BalanceClaimed(msg.sender, bal);
     }
         
-    function transferItem(address nft, uint nftId, uint _auctionId) external {
-        if(!appStarted)
-            revert Auction__AppNotStarted();
+    function transferItem(address nft, uint nftId, uint _auctionId) external open {
         require(!appClosed, "warning: application closed");
         Auction storage auction = auctions[_auctionId];
         if(msg.sender != auction.seller)
@@ -224,4 +221,6 @@ contract AuctionAuction {
 * Open github repo and write a deploy script.
 */
 
-
+// Personal Notes
+// finish using newly created modifier open, and delete requires of the contract being 
+// closed. The self destruct function deletes the contracts bytecode.
