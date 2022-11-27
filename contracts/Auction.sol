@@ -36,7 +36,7 @@ contract AuctionAuction {
     mapping(address => bool) public isSeller;
     mapping(address => uint) public bids;
 
-    // will replace with enums
+    // for starting application ! auction
     bool public appStarted;
     bool public appClosed;
     
