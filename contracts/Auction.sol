@@ -32,8 +32,6 @@ contract AuctionAuction {
     // charge a small fee for using the application
     uint public constant TAX_FEE = 1e5;
 
-
-
     mapping(uint => address) public sellerOf;
     mapping(address => bool) public isSeller;
     mapping(address => uint) public bids;
