@@ -59,7 +59,7 @@ contract AuctionAuction {
     event ItemSold(address winner, uint amount);
     event AuctionClosed(address indexed owner);
 
-        // modifiers
+    // =======> MODIFIERS <=======
     modifier onlyOwner {
         if(msg.sender != owner)
             revert Auction__NotOwner();
