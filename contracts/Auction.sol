@@ -151,7 +151,6 @@ contract AuctionAuction {
     }
         
     function transferItem(address nft, uint nftId, uint _auctionId) external open {
-        require(!appClosed, "warning: application closed");
         Auction storage auction = auctions[_auctionId];
         if(msg.sender != auction.seller)
             revert Auction__NotSeller();
@@ -171,7 +170,7 @@ contract AuctionAuction {
     * @dev function transfers ownership if need for repossesion of contract.
     */
     function transferOwnership(address payable newOwner) external {
-        require(!appStarted, "warning: close application first");
+        require(!appStarted, "warning: app already started");
         require(newOwner != address(0), "invalid address");
         owner = payable(newOwner);
     }
