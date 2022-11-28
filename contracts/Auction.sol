@@ -31,8 +31,6 @@ contract AuctionAuction {
     uint public auctionItems = 0;
     uint public constant TAX_FEE = 1e5; // fee for registration
 
-    mapping(uint => address) public sellerOf;
-    mapping(address => bool) public isSeller;
     mapping(address => uint) public bids;
 
     // for starting application ! auction
@@ -89,7 +87,6 @@ contract AuctionAuction {
         emit AuctionOpen(msg.sender);
     }
 
-
     function register(address _nft, uint _nftId, uint highestBid, address payable seller) public payable open {
         require(msg.value >= TAX_FEE, "warning: insufficient registration funds");
         auctions.push(Auction({
@@ -101,9 +98,7 @@ contract AuctionAuction {
             started: false,
             sold: false
         }));
-        sellerOf[auctionItems] = msg.sender;
         auctionItems += 1;
-        isSeller[msg.sender] = true;
         IERC721(_nft).transferFrom(seller, address(this), _nftId);
         // emit event
         emit ItemCreated(msg.sender, block.timestamp, auctionItems+1);
