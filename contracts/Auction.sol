@@ -141,6 +141,7 @@ contract AuctionAuction {
         return true;
     }
 
+    // =======> EXTERNAL FUNCTIONS <=======
     function claimBalance(uint _auctionId) external auctionExists(_auctionId) {
         Auction storage auction = auctions[_auctionId];
         uint bal = bids[msg.sender];
