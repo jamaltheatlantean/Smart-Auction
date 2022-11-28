@@ -121,7 +121,6 @@ contract AuctionAuction {
     }
 
     function bid(uint _auctionId) public auctionExists(_auctionId) payable open returns (bool)  {
-        require(!appClosed, "warning: application closed");
         Auction storage auction = auctions[_auctionId];
         if(!auction.started)
             revert Auction__NotStarted();
@@ -139,7 +138,6 @@ contract AuctionAuction {
     }
 
     function claimBalance(uint _auctionId) external auctionExists(_auctionId) {
-        require(!appClosed, "warning: application closed");
         Auction storage auction = auctions[_auctionId];
         uint bal = bids[msg.sender];
         bids[msg.sender] = 0;
