@@ -89,7 +89,6 @@ contract AuctionAuction {
 
 
     function register(address _nft, uint _nftId, uint highestBid, address payable seller) public payable open {
-        require(!appClosed, "warning: application closed");
         require(msg.value >= TAX_FEE, "warning: insufficient registration funds");
         auctions.push(Auction({
             seller: payable(seller),
