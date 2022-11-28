@@ -184,7 +184,8 @@ contract AuctionAuction {
         emit AuctionClosed(msg.sender);
     }
 
-    // getter functions
+    // =======> GETTER FUNCTIONS <=======
+    
     function getHighestBid(uint _auctionId) public 
     view
     returns (uint highestBid) {
