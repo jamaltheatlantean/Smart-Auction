@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
+/* ===> INTERFACE <=== */
+
 interface IERC721 {
     function safeTransferFrom(
         address sender,
@@ -15,7 +17,8 @@ interface IERC721 {
     ) external;
 }
 
-// =======> ERRORS <==========
+/* ====> ERRORS <==== */
+
 error Auction__AppNotStarted();
 error Auction__NotStarted();
 error Auction__ItemSold();
@@ -26,16 +29,17 @@ error Auction__ItemNonExistent();
 
 contract AuctionAuction {
 
-// =======> STATE VARIABLES <========
+    /* ====> STATE VARIABLES <==== */
+
     address public owner;
     uint public auctionItems = 0;
     uint public constant TAX_FEE = 1e5; // fee for registration
-
-    mapping(address => uint) public bids;
-
+    
     // for starting application ! auction
     bool public appStarted;
     bool public appClosed;
+    
+    mapping(address => uint) public bids;
     
         struct Auction {
         address payable seller;
@@ -48,7 +52,8 @@ contract AuctionAuction {
     }
     Auction[] public auctions;
 
-    // =======> EVENTS <=======
+    /* =====> EVENTS <===== */
+    
     event AuctionOpen(address indexed owner);
     event ItemCreated(address indexed seller, uint timestamp, uint auctionId);
     event ItemBidIncreased(address indexed sender, uint bid);
@@ -56,7 +61,8 @@ contract AuctionAuction {
     event ItemSold(address winner, uint amount);
     event AuctionClosed(address indexed owner);
 
-    // =======> MODIFIERS <=======
+    /* =======> MODIFIERS <======= */
+    
     modifier onlyOwner {
         if(msg.sender != owner)
             revert Auction__NotOwner();
@@ -82,13 +88,15 @@ contract AuctionAuction {
         _;
     }
 
-    // ===> CONSTRUCTOR <===
+    /* ====> CONSTRUCTOR <==== */
+    
     constructor() {
         owner = payable(msg.sender);
     }
     
-    // =======> PUBLIC FUNCTIONS <=======
-    // generally starts up the auction application.
+    /* =======> PUBLIC FUNCTIONS <======= */
+    
+    // function generally starts up the auction application.
     function startApp() public onlyOwner {
         appStarted = true;
         emit AuctionOpen(msg.sender);
@@ -141,7 +149,8 @@ contract AuctionAuction {
         return true;
     }
 
-    // =======> EXTERNAL FUNCTIONS <=======
+    /* =====> EXTERNAL FUNCTIONS <===== */
+    
     function claimBalance(uint _auctionId) external auctionExists(_auctionId) {
         Auction storage auction = auctions[_auctionId];
         uint bal = bids[msg.sender];
@@ -170,7 +179,7 @@ contract AuctionAuction {
     }
 
     /**
-    * @dev function transfers ownership if need for repossesion of contract.
+    * @dev function transfers ownership for repossesion of contract.
     */
     function transferOwnership(address payable newOwner) external {
         require(!appStarted, "warning: app already started");
@@ -184,7 +193,7 @@ contract AuctionAuction {
         emit AuctionClosed(msg.sender);
     }
 
-    // =======> GETTER FUNCTIONS <=======
+    /* =====> GETTER FUNCTIONS <===== */
     
     function getHighestBid(uint _auctionId) public 
     view
