@@ -112,7 +112,6 @@ contract AuctionAuction {
     * 86400 = 1 day
         */
     function startAuction(uint _auctionId) public auctionExists(_auctionId) open {
-        require(!appClosed, "warning: application closed");
         Auction storage auction = auctions[_auctionId];
         if(msg.sender != auction.seller)
             revert Auction__NotSeller();
