@@ -50,7 +50,7 @@ contract AuctionAuction {
     }
     Auction[] public auctions;
 
-    // events
+    // =======> EVENTS <=======
     event AuctionOpen(address indexed owner);
     event ItemCreated(address indexed seller, uint timestamp, uint auctionId);
     event ItemBidIncreased(address indexed sender, uint bid);
@@ -77,12 +77,14 @@ contract AuctionAuction {
         _;
     }
 
+    // ===> CONSTRUCTOR <===
     constructor() {
         owner = payable(msg.sender);
     }
-
+    
+    // =======> PUBLIC FUNCTIONS <=======
     // generally starts up the auction application.
-    function startApp() public {
+    function startApp() public onlyOwner {
         appStarted = true;
         emit AuctionOpen(msg.sender);
     }
