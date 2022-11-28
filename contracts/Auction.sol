@@ -154,7 +154,7 @@ contract AuctionAuction {
         emit BalanceClaimed(msg.sender, bal);
     }
         
-    function transferItem(address nft, uint nftId, uint _auctionId) external open auctionExists(_auctionId) onlySeller(_auctionId) {
+    function transferItem(address nft, uint nftId, uint _auctionId) external open auctionExists(_auctionId) {
         Auction storage auction = auctions[_auctionId];
         auction.sold = true;
         if(auction.highestBidder != address(0)) {
@@ -200,6 +200,16 @@ contract AuctionAuction {
     function getAuctionState(uint _auctionId) public view returns (bool started, bool sold) {
         Auction storage auction = auctions[_auctionId];
         return(auction.started, auction.sold);
+    }
+
+    function getSeller(uint _auctionId) public view returns (address seller) {
+        Auction storage auction = auctions[_auctionId];
+        return(auction.seller);
+    }
+
+    function getNftId(uint _auctionId) public view returns (uint nftId) {
+        Auction storage auction = auctions[_auctionId];
+        return(auction.nftId);
     }
 
     function getItems() public view returns (Auction[] memory) {
