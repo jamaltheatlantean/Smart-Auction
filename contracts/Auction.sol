@@ -75,6 +75,13 @@ contract AuctionAuction {
         _;
     }
 
+    modifier onlySeller(uint _auctionId) {
+        Auction storage auction = auctions[_auctionId];
+        if(msg.sender != auction.seller) 
+            revert Auction__NotSeller();
+        _;
+    }
+
     // ===> CONSTRUCTOR <===
     constructor() {
         owner = payable(msg.sender);
@@ -147,10 +154,8 @@ contract AuctionAuction {
         emit BalanceClaimed(msg.sender, bal);
     }
         
-    function transferItem(address nft, uint nftId, uint _auctionId) external open auctionExists(_auctionId) {
+    function transferItem(address nft, uint nftId, uint _auctionId) external open auctionExists(_auctionId) onlySeller(_auctionId) {
         Auction storage auction = auctions[_auctionId];
-        if(msg.sender != auction.seller)
-            revert Auction__NotSeller();
         auction.sold = true;
         if(auction.highestBidder != address(0)) {
             //IERC721(nft).safeTransferFrom(address(this), auction.highestBidder, nftId);
