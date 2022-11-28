@@ -150,7 +150,7 @@ contract AuctionAuction {
         emit BalanceClaimed(msg.sender, bal);
     }
         
-    function transferItem(address nft, uint nftId, uint _auctionId) external open {
+    function transferItem(address nft, uint nftId, uint _auctionId) external open auctionExists(_auctionId) {
         Auction storage auction = auctions[_auctionId];
         if(msg.sender != auction.seller)
             revert Auction__NotSeller();
