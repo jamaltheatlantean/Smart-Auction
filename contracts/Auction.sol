@@ -233,12 +233,5 @@ contract AuctionAuction {
 
 }
 /**
-* @ Persoanal Notes: Using enums to represent the auctionState is pointless as there are only
-* started and sold booleans.
-* Focus more on implementing chainlink keepers
-* Open github repo and write a deploy script.
+* @ Persoanal Notes: Open github repo and write a deploy script.
 */
-
-// Personal Notes
-// finish using newly created modifier open, and delete requires of the contract being 
-// closed. The self destruct function deletes the contracts bytecode.
