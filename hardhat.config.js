@@ -1,11 +1,11 @@
-require("@nomicfoundation/hardhat-toolbox");
-require("@nomicfoundation/hardhat-chai-matchers");
+require("@nomiclabs/hardhat-waffle")
+require("hardhat-deploy")
 require("dotenv").config()
+require("@nomiclabs/hardhat-ethers");
 
-/** @type import('hardhat/config').HardhatUserConfig */
-module.exports = {
-  solidity: "0.8.9",
-};
+/**
+ * @type import('hardhat/config').HardhatUserConfig
+ */
 
 const GOERLI_RPC_URL = process.env.GOERLI_RPC_URL 
 const PRIVATE_KEY = process.env.PRIVATE_KEY
@@ -42,7 +42,7 @@ module.exports = {
     solidity: {
         compilers: [
             {
-                version: "0.8.7",
+                version: "0.8.13",
             },
         ],
     },
