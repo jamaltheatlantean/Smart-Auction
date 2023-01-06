@@ -3,36 +3,25 @@ pragma solidity ^0.8.13;
 
 /* ===> INTERFACE <=== */
 
-interface IERC721 {
-    function safeTransferFrom(
-        address sender,
-        address nft,
-        uint nftId
-    ) external;
-        
-    function transferFrom(
-        address,
-        address,
-        uint 
-    ) external;
-}
+import "./IERC721.sol";
 
 /* ====> ERRORS <==== */
 
 error Auction__AppNotStarted();
 error Auction__NotStarted();
+error Auction__SaleOver();
 error Auction__ItemSold();
 error Auction__NotOwner();
 error Auction__NoBalance();
 error Auction__NotSeller();
 error Auction__ItemNonExistent();
 
-contract AuctionAuction {
+contract Auction {
 
     /* ====> STATE VARIABLES <==== */
 
-    address public owner;
-    uint public auctionItems = 0;
+    address public owner; 
+    uint public totalItems = 0; // Amount of items created for auction
     uint public constant TAX_FEE = 1e5; // fee for registration
     
     // for starting application ! auction
@@ -41,21 +30,23 @@ contract AuctionAuction {
     
     mapping(address => uint) public bids;
     
-        struct Auction {
-        address payable seller;
-        address highestBidder;
-        uint highestBid;
-        address nft;
-        uint nftId;
-        bool started;
-        bool sold;
+    struct AuctionItem {
+        address payable seller; // seller of item
+        address highestBidder; // highest bidder
+        uint highestBid; // highest bid
+        address nft; //  address of NFT
+        uint nftId; // NFT id
+        uint endAt; // 
+        bool started; // auction started = true
+        bool sold;  // item sold = true
     }
-    Auction[] public auctions;
+    AuctionItem[] public auctionItems;
 
     /* =====> EVENTS <===== */
     
     event AuctionOpen(address indexed owner);
-    event ItemCreated(address indexed seller, uint timestamp, uint auctionId);
+    event ItemCreated(address indexed seller, uint timestamp, uint _auctionId);
+    event AuctionStarted(uint indexed _auctionId);
     event ItemBidIncreased(address indexed sender, uint bid);
     event BalanceClaimed(address indexed sender, uint bal);
     event ItemSold(address winner, uint amount);
@@ -70,7 +61,7 @@ contract AuctionAuction {
     }
 
     modifier auctionExists(uint _auctionId) {
-    if(_auctionId > auctions.length)
+    if(_auctionId > auctionItems.length)
         revert Auction__ItemNonExistent();
         _;
     }
@@ -82,7 +73,7 @@ contract AuctionAuction {
     }
 
     modifier onlySeller(uint _auctionId) {
-        Auction storage auction = auctions[_auctionId];
+        AuctionItem storage auction = auctionItems[_auctionId];
         if(msg.sender != auction.seller) 
             revert Auction__NotSeller();
         _;
@@ -96,7 +87,7 @@ contract AuctionAuction {
     
     /* =======> PUBLIC FUNCTIONS <======= */
     
-    // function generally starts up the auction application.
+    // function for generally starting up the auction application.
     function startApp() public onlyOwner {
         appStarted = true;
         emit AuctionOpen(msg.sender);
@@ -104,40 +95,40 @@ contract AuctionAuction {
 
     function register(address _nft, uint _nftId, uint highestBid, address payable seller) public payable open {
         require(msg.value >= TAX_FEE, "warning: insufficient registration funds");
-        auctions.push(Auction({
+        auctionItems.push(AuctionItem({
             seller: payable(seller),
             nft: _nft,
             nftId: _nftId,
             highestBidder: address(0),
             highestBid: highestBid,
+            endAt: block.timestamp + 7 days,
             started: false,
             sold: false
         }));
-        auctionItems += 1;
+        totalItems += 1;
         IERC721(_nft).transferFrom(seller, address(this), _nftId);
         // emit event
-        emit ItemCreated(msg.sender, block.timestamp, auctionItems+1);
+        emit ItemCreated(msg.sender, block.timestamp, totalItems+1);
     }
 
-    /**
-    * Time Stamp in seconds
-    * 86400 = 1 day
-        */
     function startAuction(uint _auctionId) public auctionExists(_auctionId) open {
-        Auction storage auction = auctions[_auctionId];
+        AuctionItem storage auction = auctionItems[_auctionId];
         if(msg.sender != auction.seller)
             revert Auction__NotSeller();
         require(auction.sold != true, "Item sold");
         auction.started = true;
-        // add endTime later
+        // emit event
+        emit AuctionStarted(_auctionId);
     }
 
     function bid(uint _auctionId) public auctionExists(_auctionId) payable open returns (bool)  {
-        Auction storage auction = auctions[_auctionId];
+        AuctionItem storage auction = auctionItems[_auctionId];
         if(!auction.started)
             revert Auction__NotStarted();
         if(auction.sold)
             revert Auction__ItemSold();
+        if(block.timestamp >= auction.endAt)
+            revert Auction__SaleOver();
         require(msg.value > auction.highestBid, "Bid higher");
         auction.highestBidder = msg.sender;
         auction.highestBid = msg.value;
@@ -152,7 +143,7 @@ contract AuctionAuction {
     /* =====> EXTERNAL FUNCTIONS <===== */
     
     function claimBalance(uint _auctionId) external auctionExists(_auctionId) {
-        Auction storage auction = auctions[_auctionId];
+        AuctionItem storage auction = auctionItems[_auctionId];
         uint bal = bids[msg.sender];
         bids[msg.sender] = 0;
         if(msg.sender != auction.highestBidder) {
@@ -165,14 +156,15 @@ contract AuctionAuction {
     }
         
     function transferItem(address nft, uint nftId, uint _auctionId) external open auctionExists(_auctionId) {
-        Auction storage auction = auctions[_auctionId];
+        AuctionItem storage auction = auctionItems[_auctionId];
+        require(block.timestamp >= auction.endAt, "warning: Auction not due");
         auction.sold = true;
         if(auction.highestBidder != address(0)) {
-            //IERC721(nft).safeTransferFrom(address(this), auction.highestBidder, nftId);
+            IERC721(nft).safeTransferFrom(address(this), auction.highestBidder, nftId);
         auction.seller.transfer(auction.highestBid);
         } else {
             // transfer item back to seller
-            //IERC721(nft).safeTransferFrom(address(this), auction.seller, nftId);
+            IERC721(nft).safeTransferFrom(address(this), auction.seller, nftId);
         }
         // emit event
         emit ItemSold(auction.highestBidder, auction.highestBid);
@@ -198,40 +190,37 @@ contract AuctionAuction {
     function getHighestBid(uint _auctionId) public 
     view
     returns (uint highestBid) {
-        Auction storage auction = auctions[_auctionId];
+        AuctionItem storage auction = auctionItems[_auctionId];
         return(auction.highestBid);
     }
 
     function getHighestBidder(uint _auctionId) public view returns (address highestBidder)
     {
-        Auction storage auction = auctions[_auctionId];
+        AuctionItem storage auction = auctionItems[_auctionId];
         return(auction.highestBidder);
     }
 
-    function getAuctionState(uint _auctionId) public view returns (bool started, bool sold) {
-        Auction storage auction = auctions[_auctionId];
-        return(auction.started, auction.sold);
+    function getAuctionItemState(uint _auctionId) public view returns (bool started, uint endAt, bool sold) {
+        AuctionItem storage auction = auctionItems[_auctionId];
+        return(auction.started, auction.endAt, auction.sold);
     }
 
     function getSeller(uint _auctionId) public view returns (address seller) {
-        Auction storage auction = auctions[_auctionId];
+        AuctionItem storage auction = auctionItems[_auctionId];
         return(auction.seller);
     }
 
     function getNftId(uint _auctionId) public view returns (uint nftId) {
-        Auction storage auction = auctions[_auctionId];
+        AuctionItem storage auction = auctionItems[_auctionId];
         return(auction.nftId);
     }
 
-    function getItems() public view returns (Auction[] memory) {
-        return auctions;
+    function getAuctionItems() public view returns (AuctionItem[] memory) {
+        return auctionItems;
     }
 
-    function getItemInfo(uint _auctionId) public view returns (Auction memory) {
-        return auctions[_auctionId - 1];
+    function getItemInfo(uint _auctionId) public view returns (AuctionItem memory) {
+        return auctionItems[_auctionId - 1];
     }
 
 }
-/**
-* @ Persoanal Notes: Open github repo and write a deploy script.
-*/
