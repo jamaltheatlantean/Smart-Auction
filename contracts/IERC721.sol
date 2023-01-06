@@ -1,19 +1,16 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.7;
-
-import "@openzeppelin-contracts/token/ERC721/ERC721.sol";
+//SPDX-License-Identifier: MIT
+pragma solidity 0.8.13;
 
 interface IERC721 {
     function safeTransferFrom(
-        address from,
-        address to,
-        uint tokenId
+        address sender,
+        address nft,
+        uint nftId
     ) external;
-
+        
     function transferFrom(
         address,
         address,
-        uint
+        uint 
     ) external;
 }
-
