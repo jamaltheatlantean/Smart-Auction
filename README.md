@@ -178,7 +178,7 @@ This contract is licensed under the MIT License.
 <!-- CONTACT -->
 ## Contact
 
-Gabriel Isobara [Jamaltheatlantean]                                
+Jamaltheatlantean [Gabriel Isobara]                               
 Send me a tweet - [@twitter](https://twitter.com/ThatAtlantean)                                                            
 
 Or write me a mail - jamaltheatlantean@gmail.com
