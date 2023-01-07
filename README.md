@@ -183,7 +183,7 @@ Send me a tweet - [@twitter](https://twitter.com/ThatAtlantean)
 
 Or write me a mail - jamaltheatlantean@gmail.com
 
-Project Link: [https://github.com/jamaltheatlantean/SPLIT-PAY](https://github.com/jamaltheatlantean/SPLIT-PAY)
+Project Link: [https://github.com/jamaltheatlantean/SPLIT-PAY](https://github.com/jamaltheatlantean/UPGRADED-ENGLISH-AUCTION)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
