@@ -13,7 +13,6 @@
   </a>
 
 <h3 align="center">UPGRADED ENGLISH AUCTION</h3>
-<div>
   <p align="center">
     Have multiple auctions at once.
     <br />
