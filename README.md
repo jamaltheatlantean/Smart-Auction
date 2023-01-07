@@ -186,16 +186,9 @@ Project Link: [https://github.com/jamaltheatlantean/UPGRADED-ENGLISH-AUCTION](ht
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
-[contributors-shield]: https://img.shields.io/github/contributors/jamaltheatlantean/UPGRADED-ENGLISH-AUCTION.svg?style=for-the-badge
 [contributors-url]: https://github.com/jamaltheatlantean/UPGRADED-ENGLISH-AUCTION/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/jamaltheatlantean/UPGRADED-ENGLISH-AUCTION.svg?style=for-the-badge
-[forks-url]: https://github.com/jamaltheatlantean/UPGRADED-ENGLISH-AUCTION/network/members
-[stars-shield]: https://img.shields.io/github/stars/jamaltheatlantean/UPGRADED-ENGLISH-AUCTION.svg?style=for-the-badge
-[stars-url]: https://github.com/jamaltheatlantean/UPGRADED-ENGLISH-AUCTION/stargazers
 [issues-shield]: https://img.shields.io/github/issues/jamaltheatlantean/UPGRADED-ENGLISH-AUCTION.svg?style=for-the-badge
 [issues-url]: https://github.com/jamaltheatlantean/UPGRADED-ENGLISH-AUCTION/issues
-[license-shield]: https://img.shields.io/github/license/jamaltheatlantean/UPGRADED-ENGLISH-AUCTION.svg?style=for-the-badge
-[license-url]: https://github.com/jamaltheatlantean/UPGRADED-ENGLISH-AUCTION/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/gabriel-isobara
 [Soliditylang.org]: https://img.shields.io/badge/solidity-lang-lightgrey
