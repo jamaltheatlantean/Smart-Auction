@@ -9,7 +9,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="[https://github.com/github_username/repo_name](https://github.com/jamaltheatlantean/UPGRADED-ENGLISH-AUCTION)">
+  <a href="[https://github.com/jamaltheatlantean/UPGRADED-ENGLISH-AUCTION](https://github.com/jamaltheatlantean/UPGRADED-ENGLISH-AUCTION)">
   </a>
 
 <h3 align="center">UPGRADED ENGLISH AUCTION</h3>
@@ -19,9 +19,9 @@
     <a href="https://github.com/jamaltheatlantean/UPGRADED-ENGLISH-AUCTION"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/github_username/UPGRADED-ENGLISH-AUCTION/issues">Report Bug</a>
+    <a href="https://github.com/jamaltheatlantean/UPGRADED-ENGLISH-AUCTION/issues">Report Bug</a>
     ·
-    <a href="https://github.com/github_username/UPGRADED-ENGLISH-AUCTION/issues">Request Feature</a>
+    <a href="https://github.com/jamaltheatlantean/UPGRADED-ENGLISH-AUCTION/issues">Request Feature</a>
   </p>
 </div>
 
