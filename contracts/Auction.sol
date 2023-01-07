@@ -180,6 +180,7 @@ contract Auction {
     }
 
     function closeApplication() external onlyOwner {
+        require(address(this).balance == 0, "warning: Funds still in application");
         appClosed = true;
         selfdestruct(payable (owner));
         emit AuctionClosed(msg.sender);
