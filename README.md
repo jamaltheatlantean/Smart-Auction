@@ -1,14 +1,110 @@
-# Smart-Auction Contract
+<a name="readme-top"></a>
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![MIT License][license-shield]][license-url]
+[![LinkedIn][linkedin-shield]][linkedin-url]
+
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <a href="[https://github.com/github_username/repo_name](https://github.com/jamaltheatlantean/SPLIT-PAY/)">
+  </a>
+
+<h3 align="center">UPGRADED ENGLISH AUCTION</h3>
+<div>
+  <p align="center">
+    Have multiple auctions at once.
+    <br />
+    <a href="https://github.com/jamaltheatlantean/UPGRADED-ENGLISH-AUCTION"><strong>Explore the docs »</strong></a>
+    <br />
+    <br />
+    <a href="https://github.com/github_username/UPGRADED-ENGLISH-AUCTION/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/github_username/UPGRADED-ENGLISH-AUCTION/issues">Request Feature</a>
+  </p>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+      <ul>
+        <li><a href="#built-with">Built With</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#installation">Installation</a></li>
+      </ul>
+    </li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#license">License</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#acknowledgments">Acknowledgments</a></li>
+  </ol>
+</details>
+
+
+<!-- ABOUT THE PROJECT -->
+## About The Project
 
 This is a full smart contract for handling multiple auctions of ERC721 tokens. The contract has a self destruct function that can only be called when all items have been sold.
+  
+  ### Built With
 
+* [![Solidity][Soliditylang.org]][Solidity-url]
+
+  
+  <!-- GETTING STARTED -->
+## Getting Started
+
+### Prerequisites
+
+* npm
+  ```sh
+  npm install npm@latest -g
+  ```
+
+<!-- INSTALLATION -->
+### Installation
+
+1. Get a free API Key at [https://alchemy.com](https://alchemy.com)
+2. Clone the repo
+   ```sh
+   git clone https://github.com/jamaltheatlantean/SPLIT-PAY.git
+   ```
+3. Install NPM packages
+   ```sh
+   npm install
+   ```
+4. Enter your API in `config.js`
+   ```js
+   const API_KEY = 'ENTER YOUR API';
+   ```
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+  
+<!-- FEATURES -->
 ## Features
 
 -   The contract can hold multiple ERC721 tokens and award them to the highestBidder.
 -   The contracts ownership can be transferred to a new address incase of need.
 -   When a bid has been outbidded the bidder can withdraw his ETH and bid higher.
 -   The contract has a self-destruct function that sends all unclaimed funds to the owners address. Tp prevent loss of unclaimed funds, this function can only be called when there arent any funds left in the contract. `require(address(this).balance == 0)`.
+  
+<!-- ISSUES -->
+## Issues
+  See the [open issues](https://github.com/github_username/repo_name/issues) for a full list of proposed features (and known issues).
 
+<!--EVENTS -->
 ## Events
 
 The contract includes the following events:
@@ -22,7 +118,7 @@ The contract includes the following events:
 -   `event AuctionClosed(address indexed owner)`: Emitted when the application has been declared closed by the owner and the self destruct function has been activated.
 
 
-
+<!-- MODIFIERS -->
 ## Modifiers
 
 The contract uses the following modifiers to control access to its functions:
@@ -32,7 +128,7 @@ The contract uses the following modifiers to control access to its functions:
 -   `auctionExists(uint _auctionId)`: Ensures an auction item exists, otherwise blocks functions call.
 -   `open`: Ensures an item has been declared for sale, otherwise blocks function call.
 
-
+<!--GETTERS -->
 ## Getters
 
 The contract provides the following getter functions:
@@ -45,7 +141,8 @@ The contract provides the following getter functions:
 -   `getAuctionItems()`: Returns the total number of items created for sale in auction.
 -   `getItemInfo(uint _auctionId)`: Returns every detail on auction item for sale. Master getter.
 
-## Improvement To-do
+<!-- IMPROVEMENTS -->
+## Improvements
 
 This is just an simple implementation of the raw idea, still tons of improvement is need to be done
 
@@ -53,9 +150,26 @@ This is just an simple implementation of the raw idea, still tons of improvement
 -   Host application on vercel.
 -   Write function tests.
 -   Create an incentive for sellers using my erc20 tokens.
+  
+  
+<!-- CONTRIBUTING -->
+## Contributing
 
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
+Don't forget to give the project a star! Thanks again!
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!--LICENSE -->
 ## License
 
 This contract is licensed under the MIT License.
 
-## Contributions
