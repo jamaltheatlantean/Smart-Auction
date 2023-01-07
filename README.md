@@ -101,7 +101,7 @@ This is a full smart contract for handling multiple auctions of ERC721 tokens. T
   
 <!-- ISSUES -->
 ## Issues
-  See the [open issues](https://github.com/github_username/repo_name/issues) for a full list of proposed features (and known issues).
+  See the [open issues](https://github.com/jamaltheatlantean/UPGRADED-ENGLISH-AUCTION/issues) for a full list of proposed features (and known issues).
 
 <!--EVENTS -->
 ## Events
