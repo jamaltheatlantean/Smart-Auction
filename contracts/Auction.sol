@@ -36,7 +36,7 @@ contract Auction {
         uint highestBid; // highest bid
         address nft; //  address of NFT
         uint nftId; // NFT id
-        uint endAt; // 
+        uint endAt; // expiration period on item 
         bool started; // auction started = true
         bool sold;  // item sold = true
     }
@@ -111,10 +111,8 @@ contract Auction {
         emit ItemCreated(msg.sender, block.timestamp, totalItems+1);
     }
 
-    function startAuction(uint _auctionId) public auctionExists(_auctionId) open {
+    function startAuction(uint _auctionId) public auctionExists(_auctionId) onlySeller(_auctionId) open {
         AuctionItem storage auction = auctionItems[_auctionId];
-        if(msg.sender != auction.seller)
-            revert Auction__NotSeller();
         require(auction.sold != true, "Item sold");
         auction.started = true;
         // emit event
