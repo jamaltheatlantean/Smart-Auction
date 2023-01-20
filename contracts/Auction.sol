@@ -18,7 +18,7 @@ error Auction__ItemNonExistent();
 
 contract Auction {
 
-    /* ====> STATE VARIABLES <==== */
+    /* --> STATE VARIABLES <-- */
 
     address public owner; 
     uint public totalItems = 0; // Amount of items created for auction
@@ -42,7 +42,7 @@ contract Auction {
     }
     AuctionItem[] public auctionItems;
 
-    /* =====> EVENTS <===== */
+    /* --> EVENTS <-- */
     
     event AuctionOpen(address indexed owner);
     event ItemCreated(address indexed seller, uint timestamp, uint _auctionId);
@@ -52,7 +52,7 @@ contract Auction {
     event ItemSold(address winner, uint amount);
     event AuctionClosed(address indexed owner);
 
-    /* =======> MODIFIERS <======= */
+    /* --> MODIFIERS <-- */
     
     modifier onlyOwner {
         if(msg.sender != owner)
