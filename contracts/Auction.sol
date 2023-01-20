@@ -153,7 +153,7 @@ contract Auction {
         emit BalanceClaimed(msg.sender, bal);
     }
         
-    function transferItem(address nft, uint nftId, uint _auctionId) external open auctionExists(_auctionId) {
+    function transferItem(address nft, uint nftId, uint _auctionId) external onlySeller(_auctionId) open auctionExists(_auctionId) {
         AuctionItem storage auction = auctionItems[_auctionId];
         require(block.timestamp >= auction.endAt, "warning: Auction not due");
         auction.sold = true;
