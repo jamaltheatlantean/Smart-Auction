@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-/* ===> INTERFACE <=== */
+/* --> INTERFACE <-- */
 
 import "./IERC721.sol";
 
-/* ====> ERRORS <==== */
+/* --> ERRORS <-- */
 
 error Auction__AppNotStarted();
 error Auction__NotStarted();
