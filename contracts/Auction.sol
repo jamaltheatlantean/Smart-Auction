@@ -138,7 +138,7 @@ contract Auction {
         return true;
     }
 
-    /* =====> EXTERNAL FUNCTIONS <===== */
+    /* --> EXTERNAL FUNCTIONS <-- */
     
     function claimBalance(uint _auctionId) external auctionExists(_auctionId) {
         AuctionItem storage auction = auctionItems[_auctionId];
@@ -184,7 +184,7 @@ contract Auction {
         emit AuctionClosed(msg.sender);
     }
 
-    /* =====> GETTER FUNCTIONS <===== */
+    /* --> GETTER FUNCTIONS <-- */
     
     function getHighestBid(uint _auctionId) public 
     view
