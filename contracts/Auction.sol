@@ -221,5 +221,4 @@ contract Auction {
     function getItemInfo(uint _auctionId) public view returns (AuctionItem memory) {
         return auctionItems[_auctionId - 1];
     }
-
 }
