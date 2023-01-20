@@ -79,13 +79,13 @@ contract Auction {
         _;
     }
 
-    /* ====> CONSTRUCTOR <==== */
+    /* --> CONSTRUCTOR <-- */
     
     constructor() {
         owner = payable(msg.sender);
     }
     
-    /* =======> PUBLIC FUNCTIONS <======= */
+    /* --> PUBLIC FUNCTIONS <-- */
     
     // function for generally starting up the auction application.
     function startApp() public onlyOwner {
