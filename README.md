@@ -134,7 +134,7 @@ The contract provides the following getter functions:
 
 -   `getHighestBid(uint _auctionId)`: Returns the highest bid of an item.
 -   `getHighestBidder(uint _auctionId)`: Returns the address of the highest bidder.
--   `getAuctionItemState(uint _auctionId)`: Returns the state of the item. i.e. `bool started` if the auctioning of item has started, `uint endAt` how many days left before auction item closes, `bool sold` if the item has been sold.
+-   `getAuctionItemState(uint _auctionId)`: Returns the state of the item. i.e. `bool started` if the auction of item has started, `uint endAt` how many days left before auction item closes, `bool sold` if the item has been sold.
 -   `getSeller(uint _auctionId)`: Returns the address of the items seller.
 -   `getNftId(uint _auctionId)`: Returns the id of the NFT to be sold.
 -   `getAuctionItems()`: Returns the total number of items created for sale in auction.
