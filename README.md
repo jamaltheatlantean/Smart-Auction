@@ -97,7 +97,7 @@ This is a full smart contract for handling multiple auctions of ERC721 tokens. T
 -   The contract can hold multiple ERC721 tokens and award them to the highestBidder.
 -   The contracts ownership can be transferred to a new address incase of need.
 -   When a bid has been outbidded the bidder can withdraw his ETH and bid higher.
--   The contract has a self-destruct function that sends all unclaimed funds to the owners address. Tp prevent loss of unclaimed funds, this function can only be called when there arent any funds left in the contract. `require(address(this).balance == 0)`.
+-   The contract has a self-destruct function that sends all unclaimed funds to the owners address. To prevent loss of unclaimed funds, this function can only be called when there arent any funds left in the contract. `require(address(this).balance == 0)`.
   
 <!-- ISSUES -->
 ## Issues
