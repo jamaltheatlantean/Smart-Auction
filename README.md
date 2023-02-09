@@ -111,7 +111,7 @@ The contract includes the following events:
 -   `event AuctionOpen(address indexed owner)`: Emitted when the application is declared active by the owner.
 -   `event ItemCreated(address indexed seller, uint timestamp, uint _auctionId)`: Emitted when an item has been created for auctioning. It emits the seller, time created and it's id which is its place in the array of Auctions.
 -   `event AuctionStarted(uint indexed _auctionId)`: Emitted when created item has been declared up for sale by the seller. Starting its 7 days on the auction countdown. It emits the id.
--   `event ItemBidIncreased(address indexed sender, uint bid, uint indexed _auctionId)`: Emitted when the bid on an item has been increased, cancelling out a previous bid. It emits the addrress of the bidder `msg.sender`, the amount bidded, and the identification number of the item.
+-   `event ItemBidIncreased(address indexed sender, uint bid, uint indexed _auctionId)`: Emitted when the bid on an item has been increased, cancelling out a previous bid. It emits the addrress of the bidder `msg.sender`, the amount bidded, and the id.
 -   `event BalanceClaimed(address indexed sender, uint bal)`: Emitted when a bidder claims his outbidded balance from the contract. It emits the bidders address and the amount `bal`.
 -   `event ItemSold(address winner, uint amount)event ItemSold(address winner, uint amount)`: Emitted when the 7 days auction is over and the item has been awarded to the highest bidder `highestBidder`. It emits the addrress of the winning bidder and the amount the item sold for.
 -   `event AuctionClosed(address indexed owner)`: Emitted when the application has been declared closed by the owner and the self destruct function has been activated.
