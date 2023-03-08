@@ -122,7 +122,7 @@ The contract includes the following events:
 
 The contract uses the following modifiers to control access to its functions:
 
--   `olyOwner`: Allows only the owner to call function.
+-   `onlyOwner`: Allows only the owner to call function.
 -   `onlySeller(uint _auctionId)`: Allows only seller of item to call function.
 -   `auctionExists(uint _auctionId)`: Ensures an auction item exists, otherwise blocks functions call.
 -   `open`: Ensures an item has been declared for sale, otherwise blocks function call.
