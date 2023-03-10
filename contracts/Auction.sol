@@ -46,7 +46,7 @@ contract Auction {
     
     event AuctionOpen(address indexed owner);
     event ItemCreated(address indexed seller, uint timestamp, uint _auctionId);
-    event AuctionStarted(uint indexed _auctionId);
+    event AuctionStarted(address indexed seller, uint _auctionId);
     event ItemBidIncreased(address indexed sender, uint bid);
     event BalanceClaimed(address indexed sender, uint bal);
     event ItemSold(address winner, uint amount);
@@ -116,7 +116,7 @@ contract Auction {
         require(auction.sold != true, "Item sold");
         auction.started = true;
         // emit event
-        emit AuctionStarted(_auctionId);
+        emit AuctionStarted(seller, _auctionId);
     }
 
     function bid(uint _auctionId) public auctionExists(_auctionId) payable open returns (bool)  {
