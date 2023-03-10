@@ -133,9 +133,9 @@ contract Auction {
         if(auction.highestBidder != address(0)) {
             bids[auction.highestBidder] += auction.highestBid;
         }
+        return true;
         // emit event
         emit ItemBidIncreased(msg.sender, msg.value);
-        return true;
     }
 
     /* --> EXTERNAL FUNCTIONS <-- */
