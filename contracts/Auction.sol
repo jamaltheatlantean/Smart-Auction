@@ -48,8 +48,8 @@ contract Auction {
     event ItemCreated(address indexed seller, uint timestamp, uint _auctionId);
     event AuctionStarted(address indexed seller, uint _auctionId);
     event ItemBidIncreased(address indexed sender, uint bid);
-    event BalanceClaimed(address indexed sender, uint bal);
-    event ItemSold(address winner, uint amount);
+    event BalanceClaimed(address indexed sender, uint bal, uint timestamp);
+    event ItemSold(address winner, uint amount, uint timestamp);
     event AuctionClosed(address indexed owner);
 
     /* --> MODIFIERS <-- */
@@ -150,7 +150,7 @@ contract Auction {
         revert Auction__NoBalance();
         }
         // emit event
-        emit BalanceClaimed(msg.sender, bal);
+        emit BalanceClaimed(msg.sender, bal, block.timestamp);
     }
         
     function transferItem(address nft, uint nftId, uint _auctionId) external onlySeller(_auctionId) open auctionExists(_auctionId) {
@@ -165,7 +165,7 @@ contract Auction {
             IERC721(nft).safeTransferFrom(address(this), auction.seller, nftId);
         }
         // emit event
-        emit ItemSold(auction.highestBidder, auction.highestBid);
+        emit ItemSold(auction.highestBidder, auction.highestBid, block.timestamp);
     }
 
     /**
