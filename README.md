@@ -184,6 +184,7 @@ Send me a tweet - [@twitter](https://twitter.com/ThatAtlantean)
 Or write me a mail - jamaltheatlantean@gmail.com
 
 Project Link: [https://github.com/jamaltheatlantean/UPGRADED-ENGLISH-AUCTION](https://github.com/jamaltheatlantean/UPGRADED-ENGLISH-AUCTION)
+Follow tutorial here https://jamaltheatlantean.hashnode.dev/how-to-build-an-nft-auction-smart-contract
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
